@@ -1,5 +1,7 @@
 package com.flightapp.repository;
 
-public class FlightInventoryRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.flightapp.model.FlightInventory;
 
+public interface FlightInventoryRepository extends JpaRepository<FlightInventory, Long> {
 }

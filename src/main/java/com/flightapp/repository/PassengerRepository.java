@@ -1,5 +1,7 @@
 package com.flightapp.repository;
 
-public class PassengerRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.flightapp.model.Passenger;
 
+public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 }
