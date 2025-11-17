@@ -3,7 +3,6 @@ package com.flightapp.exceptions;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +22,8 @@ import com.flightapp.model.TripType;
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
+    String errorMessage="error";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationErrors(MethodArgumentNotValidException exception) {
         Map<String, String> errorMap = new HashMap<>();
@@ -35,12 +36,12 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler(ValidationException.class)
     public Map<String, String> handleCustomValidation(ValidationException ex) {
-        return Map.of("error", ex.getMessage());
+        return Map.of(errorMessage, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public Map<String, String> handleNotFound(ResourceNotFoundException ex) {
-        return Map.of("error", ex.getMessage());
+        return Map.of(errorMessage, ex.getMessage());
     }
 
     
@@ -55,39 +56,39 @@ public class GlobalErrorHandler {
             Class<?> targetType = invalidEx.getTargetType();
 
             if (targetType == CityEnum.class) {
-                error.put("error", "Invalid city. Allowed values: " + Arrays.toString(CityEnum.values()));
+                error.put(errorMessage, "Invalid city. Allowed values: " + Arrays.toString(CityEnum.values()));
                 return error;
             }
 
             if (targetType == TripType.class) {
-                error.put("error", "Invalid trip type. Allowed values: " + Arrays.toString(TripType.values()));
+                error.put(errorMessage, "Invalid trip type. Allowed values: " + Arrays.toString(TripType.values()));
                 return error;
             }
 
             if (targetType == MealType.class) {
-                error.put("error", "Invalid meal type. Allowed values: " + Arrays.toString(MealType.values()));
+                error.put(errorMessage, "Invalid meal type. Allowed values: " + Arrays.toString(MealType.values()));
                 return error;
             }
 
             if (targetType == Boolean.class) {
-                error.put("error", "Invalid value for mealAvailable. Allowed values: true or false");
+                error.put(errorMessage, "Invalid value for mealAvailable. Allowed values: true or false");
                 return error;
             }
         }
 
         if (cause instanceof DateTimeParseException) {
-            error.put("error", "Invalid date format. Use yyyy-MM-dd");
+            error.put(errorMessage, "Invalid date format. Use yyyy-MM-dd");
             return error;
         }
 
-        error.put("error", "Invalid JSON request");
+        error.put(errorMessage, "Invalid JSON request");
         return error;
     }
 
    
     @ExceptionHandler(Exception.class)
     public Map<String, String> handleOthers(Exception ex) {
-        return Map.of("error", ex.getMessage());
+        return Map.of(errorMessage, ex.getMessage());
     }
 }
 

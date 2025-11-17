@@ -36,7 +36,8 @@ public class BookingService {
     @Autowired
     private PassengerRepository passengerRepository;
 
-    public Booking bookFlight(Long flightIdFromPath, @Valid BookingRequest req) {
+    @SuppressWarnings("null")
+	public Booking bookFlight(Long flightIdFromPath, @Valid BookingRequest req) {
 
         
         FlightInventory outbound = inventoryRepository.findById(req.getOutboundFlightId())
