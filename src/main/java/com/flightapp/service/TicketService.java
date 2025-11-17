@@ -29,12 +29,10 @@ public class TicketService {
         }
 
        
-        Booking booking = bookingRepository.findByPnrOutbound(pnr)
+        return bookingRepository.findByPnrOutbound(pnr)
                 .orElseGet(() ->
                     bookingRepository.findByPnrReturn(pnr)
                         .orElseThrow(() -> new ResourceNotFoundException("PNR not found"))
                 );
-
-        return booking;
     }
 }

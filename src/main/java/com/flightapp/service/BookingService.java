@@ -28,23 +28,15 @@ import com.flightapp.request.PassengerRequest;
 public class BookingService {
 
     
-    private BookingRepository bookingRepository;
-    @Autowired
-    public BookingService(BookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
-    }
+	@Autowired
+	private BookingRepository bookingRepository;
 
-    
-    private FlightInventoryRepository inventoryRepository;
-    public BookingService(FlightInventoryRepository inventoryRepository) {
-        this.inventoryRepository = inventoryRepository;
-    }
+	@Autowired
+	private FlightInventoryRepository inventoryRepository;
 
-    
-    private PassengerRepository passengerRepository;
-    public BookingService(PassengerRepository passengerRepository) {
-        this.passengerRepository = passengerRepository;
-    }
+	@Autowired
+	private PassengerRepository passengerRepository;
+
 
   
     //helper functions

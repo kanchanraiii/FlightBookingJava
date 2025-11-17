@@ -55,7 +55,7 @@ class BookingCancellationServiceTests {
     }
 
     @Test
-    @DisplayName("Cancel a confirmed booking and restore available seats")
+    @DisplayName("Cancel a confirmed booking and get back available seats")
     void cancelConfirmedBookingRestoresSeats() {
         String pnr = "CANCEL1";
         int passengers = 2;
