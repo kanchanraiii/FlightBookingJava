@@ -2,7 +2,6 @@ package com.flightapp.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.validation.Valid;
@@ -17,8 +16,12 @@ import com.flightapp.request.FlightSearchRequest;
 @Service
 public class FlightSearchService {
 
-    @Autowired
+    
     private FlightInventoryRepository inventoryRepository;
+
+    public FlightSearchService(FlightInventoryRepository inventoryRepository) {
+        this.inventoryRepository = inventoryRepository;
+    }
 
     public List<FlightInventory> searchFlights(@Valid FlightSearchRequest req) {
 

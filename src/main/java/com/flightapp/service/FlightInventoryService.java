@@ -56,6 +56,11 @@ public class FlightInventoryService {
         if (req.getPrice() <= 0) {
             throw new ValidationException("Price must be greater than 0");
         }
+        
+        if(req.getPrice()==null) {
+        	throw new ValidationException("Price is required");
+        }
+        
 
        
         LocalDate departureDate = req.getDepartureDate();

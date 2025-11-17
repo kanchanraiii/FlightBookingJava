@@ -37,7 +37,7 @@ public class BookingService {
     private PassengerRepository passengerRepository;
 
   
-
+    //helper functions
     private void validatePassengersExist(BookingRequest req) {
         if (req.getPassengers() == null || req.getPassengers().isEmpty()) {
             throw new ValidationException("At least one passenger is required");
