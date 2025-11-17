@@ -62,19 +62,19 @@ class FlightCreationApiTests {
     @DisplayName("Add a new valid flight for an existing airline")
     void createNewValidFlightForExistingAirline() {
 
-        // request ka dhancha banaliya
+       
         AddInventory req = validRequest();
-        // airline wala object
+       
         Airline airline = new Airline();
-        // iss repo mai koi entry ki id 1L ho, toh bhai return krdo
+       
         when(airlineRepository.findById(1L)).thenReturn(Optional.of(airline));
-        // exist nahi karta
+       
         when(inventoryRepository.existsByFlightNumberAndDepartureDate(
                 req.getFlightNumber(), req.getDepartureDate())).thenReturn(false);
-        // simulation but not real saving
+       
         when(inventoryRepository.save(any(FlightInventory.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        // basically testing data se daldo
+        
         FlightInventory result = flightInventoryService.addInventory(req);
 
 
