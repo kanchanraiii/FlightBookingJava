@@ -36,18 +36,62 @@ public class BookingService {
     @Autowired
     private PassengerRepository passengerRepository;
 
-    @SuppressWarnings("null")
-	public Booking bookFlight(Long flightIdFromPath, @Valid BookingRequest req) {
+  
 
-        
+    private void validatePassengersExist(BookingRequest req) {
+        if (req.getPassengers() == null || req.getPassengers().isEmpty()) {
+            throw new ValidationException("At least one passenger is required");
+        }
+    }
+
+    private void validateSeatAvailability(FlightInventory flight, int passengerCount, String type) {
+        if (flight.getAvailableSeats() < passengerCount) {
+            throw new ValidationException("Not enough seats available in " + type + " flight");
+        }
+    }
+
+    private void validateTripType(BookingRequest req) {
+        if (req.getTripType() == TripType.ROUND_TRIP && req.getReturnFlightId() == null) {
+            throw new ValidationException("Return flight ID is required for round-trip booking");
+        }
+    }
+
+    private void validatePassengerFields(PassengerRequest p, boolean isRoundTrip) {
+
+        if (p.getAge() <= 0) {
+            throw new ValidationException("Passenger age must be greater than 0");
+        }
+
+        if (p.getSeatOutbound() == null || p.getSeatOutbound().isBlank()) {
+            throw new ValidationException("Passenger seatOutbound is required");
+        }
+
+        if (isRoundTrip &&
+                (p.getSeatReturn() == null || p.getSeatReturn().isBlank())) {
+            throw new ValidationException("Passenger seatReturn is required for round trip bookings");
+        }
+
+        if (p.getMeal() != null) {
+            try {
+                MealType.valueOf(p.getMeal().toUpperCase());
+            } catch (Exception e) {
+                throw new ValidationException("Invalid meal type: " + p.getMeal());
+            }
+        }
+    }
+
+
+    @SuppressWarnings("null")
+    public Booking bookFlight(Long flightId, @Valid BookingRequest req) {
+
+        validatePassengersExist(req);
+        validateTripType(req);
+
         FlightInventory outbound = inventoryRepository.findById(req.getOutboundFlightId())
                 .orElseThrow(() -> new ResourceNotFoundException("Outbound flight not found"));
 
-        if (outbound.getAvailableSeats() < req.getPassengers().size()) {
-            throw new ValidationException("Not enough seats available in outbound flight");
-        }
+        validateSeatAvailability(outbound, req.getPassengers().size(), "outbound");
 
-       
         FlightInventory returning = null;
 
         if (req.getReturnFlightId() != null) {
@@ -55,27 +99,14 @@ public class BookingService {
             returning = inventoryRepository.findById(req.getReturnFlightId())
                     .orElseThrow(() -> new ResourceNotFoundException("Return flight not found"));
 
-            if (returning.getAvailableSeats() < req.getPassengers().size()) {
-                throw new ValidationException("Not enough seats available in return flight");
-            }
+            validateSeatAvailability(returning, req.getPassengers().size(), "return");
         }
 
-      
-        if (req.getPassengers() == null || req.getPassengers().isEmpty()) {
-            throw new ValidationException("At least one passenger is required");
-        }
-        if (req.getTripType().equals(TripType.ROUND_TRIP) && req.getReturnFlightId() == null) {
-            throw new ValidationException("Return flight ID is required for round-trip booking");
-        }
-
-
-       
         String pnr = UUID.randomUUID().toString()
                 .replace("-", "")
                 .substring(0, 6)
                 .toUpperCase();
 
-        
         Booking booking = new Booking();
         booking.setOutboundFlight(outbound);
         booking.setReturnFlight(returning);
@@ -85,11 +116,13 @@ public class BookingService {
         booking.setStatus(BookingStatus.CONFIRMED);
         booking.setPnrOutbound(pnr);
 
-       
         booking = bookingRepository.save(booking);
 
-       
+        boolean isRoundTrip = (returning != null);
+
         for (PassengerRequest p : req.getPassengers()) {
+
+            validatePassengerFields(p, isRoundTrip);
 
             Passenger ps = new Passenger();
             ps.setName(p.getName());
@@ -98,39 +131,17 @@ public class BookingService {
             ps.setSeatOutbound(p.getSeatOutbound());
             ps.setSeatReturn(p.getSeatReturn());
 
-          
             if (p.getMeal() != null) {
-                try {
-                    ps.setMeal(MealType.valueOf(p.getMeal().toUpperCase()));
-                } catch (Exception e) {
-                    throw new ValidationException("Invalid meal type: " + p.getMeal());
-                }
+                ps.setMeal(MealType.valueOf(p.getMeal().toUpperCase()));
             }
-            
-            if(p.getAge()<=0) {
-            	throw new ValidationException("Passenger age must greater than equal to 0");
-            }
-            if (p.getSeatOutbound() == null || p.getSeatOutbound().isBlank()) {
-                throw new ValidationException("Passenger seatOutbound is required");
-            }
-            if (returning != null && 
-            	    (p.getSeatReturn() == null || p.getSeatReturn().isBlank())) {
-            	    throw new ValidationException("Passenger seatReturn is required for round trip bookings");
-            	}
-
-
 
             ps.setBooking(booking);
             passengerRepository.save(ps);
-            
-            
         }
 
-        
         outbound.setAvailableSeats(outbound.getAvailableSeats() - req.getPassengers().size());
         inventoryRepository.save(outbound);
 
-      
         if (returning != null) {
             returning.setAvailableSeats(returning.getAvailableSeats() - req.getPassengers().size());
             inventoryRepository.save(returning);
@@ -138,6 +149,8 @@ public class BookingService {
 
         return booking;
     }
+
+    
 
     public Booking getTicket(String pnr) {
         return bookingRepository.findByPnrOutbound(pnr)
@@ -155,12 +168,10 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
-        
         FlightInventory out = booking.getOutboundFlight();
         out.setAvailableSeats(out.getAvailableSeats() + booking.getTotalPassengers());
         inventoryRepository.save(out);
 
-       
         if (booking.getReturnFlight() != null) {
             FlightInventory ret = booking.getReturnFlight();
             ret.setAvailableSeats(ret.getAvailableSeats() + booking.getTotalPassengers());
