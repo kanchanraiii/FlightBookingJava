@@ -20,7 +20,7 @@ public class BookingRequest {
     private String contactName;
 
     @Email(message="Invalid email format")
-    @NotBlank(message="Email is mandatory field")
+    @NotBlank(message="Email is required field")
     private String contactEmail;
     
     @NotNull(message = "Trip type is required")
