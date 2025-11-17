@@ -3,6 +3,7 @@ package com.flightapp.service;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,34 +56,40 @@ public class FlightInventoryService {
         	throw new ValidationException("Flight no is a required field");
         }
         
-        LocalDate departureDate=req.getDepartureDate();
-        LocalDate arrivalDate=req.getArrivalDate();
-        LocalTime departureTime=req.getDepartureTime();
-        LocalTime arrivalTime=req.getArrivalTime();
+        LocalDate departureDate = req.getDepartureDate();
+        LocalDate arrivalDate = req.getArrivalDate();
+        LocalTime departureTime = req.getDepartureTime();
+        LocalTime arrivalTime = req.getArrivalTime();
+
+        if (departureDate == null) {
+            throw new ValidationException("Departure date is a required field");
+        }
+
+        if (arrivalDate == null) {
+            throw new ValidationException("Arrival date is a required field");
+        }
+
+        if (departureTime == null) {
+            throw new ValidationException("Departure time is a required field");
+        }
+
+        if (arrivalTime == null) {
+            throw new ValidationException("Arrival time is a required field");
+        }
+
         
-        if(departureDate==null) {
-        	throw new ValidationException("Departure date is a required field");
-        }
-        
-        if(arrivalDate==null) {
-        	throw new ValidationException("Arrival date is a required field");
-        }
-        
-        if(departureTime==null) {
-        	throw new ValidationException("Departure Time is a required field");
-        }
-        if(arrivalTime==null) {
-        	throw new ValidationException("Arrival Time is a required field");
-        }
-        if(arrivalDate.isBefore(departureDate)){
-        	throw new ValidationException("Arrival cannot be before Departure date");
-        }
         if (departureDate.isBefore(LocalDate.now())) {
             throw new ValidationException("Departure date cannot be in the past");
         }
-        if (inventoryRepository.existsByFlightNumberAndDepartureDate(req.getFlightNumber(), departureDate)) {
-            throw new ValidationException("A flight with the same number and departure date already exists");
+
+        
+        LocalDateTime depDT = LocalDateTime.of(departureDate, departureTime);
+        LocalDateTime arrDT = LocalDateTime.of(arrivalDate, arrivalTime);
+
+        if (!arrDT.isAfter(depDT)) {
+            throw new ValidationException("Arrival date & time must be AFTER departure date & time");
         }
+
         
         
         
