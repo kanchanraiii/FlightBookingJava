@@ -11,7 +11,7 @@ public class PassengerRequest {
     @NotNull
     private Integer age;
 
-    @NotBlank
+    @NotBlank(message="Passenger Age is a required field")
     private String gender;
 
     private String seatOutbound;

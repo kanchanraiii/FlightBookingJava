@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
+import com.flightapp.model.TripType;
+
 public class BookingRequest {
 
     @NotNull
@@ -14,14 +16,24 @@ public class BookingRequest {
 
     private Long returnFlightId;
 
-    @NotBlank
+    @NotBlank(message="Contact name is a required field")
     private String contactName;
 
-    @Email
-    @NotBlank
+    @Email(message="Invalid email format")
+    @NotBlank(message="Email is mandatory field")
     private String contactEmail;
+    
+    @NotNull(message = "Trip type is required")
+    private TripType tripType;
 
-    @Valid
+
+    public TripType getTripType() {
+		return tripType;
+	}
+	public void setTripType(TripType tripType) {
+		this.tripType = tripType;
+	}
+	@Valid
     @NotNull
     private List<PassengerRequest> passengers;
 
