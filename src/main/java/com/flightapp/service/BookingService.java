@@ -71,7 +71,7 @@ public class BookingService {
 
        
         String pnr = UUID.randomUUID().toString()
-                .replaceAll("-", "")
+                .replace("-", "")
                 .substring(0, 6)
                 .toUpperCase();
 
