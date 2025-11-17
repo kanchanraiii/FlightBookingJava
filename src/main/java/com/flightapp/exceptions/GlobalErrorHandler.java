@@ -1,6 +1,7 @@
 package com.flightapp.exceptions;
 
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,63 +13,81 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.flightapp.model.CityEnum;
+import com.flightapp.model.MealType;
+import com.flightapp.model.TripType;
+
+
+
+
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
-    // Handle @Valid errors
-    @ExceptionHandler(exception=MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationErrors(MethodArgumentNotValidException exception) {
-
         Map<String, String> errorMap = new HashMap<>();
-
-        List<ObjectError> errors = exception.getBindingResult().getAllErrors();
-
-        for (ObjectError err : errors) {
-
+        for (ObjectError err : exception.getBindingResult().getAllErrors()) {
             String field = ((FieldError) err).getField();
-            String message = err.getDefaultMessage();
-
-            errorMap.put(field, message);
+            errorMap.put(field, err.getDefaultMessage());
         }
-
         return errorMap;
     }
 
-    // Handle custom validation exceptions
     @ExceptionHandler(ValidationException.class)
     public Map<String, String> handleCustomValidation(ValidationException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return error;
+        return Map.of("error", ex.getMessage());
     }
 
-    // Handle resource not found
     @ExceptionHandler(ResourceNotFoundException.class)
     public Map<String, String> handleNotFound(ResourceNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return error;
+        return Map.of("error", ex.getMessage());
     }
 
-    // all other errors
-    @ExceptionHandler(exception=Exception.class)
-    public Map<String, String> handleOthers(Exception ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return error;
-    }
     
-    @ExceptionHandler({ HttpMessageNotReadableException.class })
-    public Map<String, String> handleInvalidFormat(HttpMessageNotReadableException ex) {
-        Map<String, String> error = new HashMap<>();
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Map<String, String> handleInvalidJson(HttpMessageNotReadableException ex) {
 
-        if (ex.getCause() instanceof DateTimeParseException) {
+        Map<String, String> error = new HashMap<>();
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException invalidEx) {
+
+            Class<?> targetType = invalidEx.getTargetType();
+
+            if (targetType == CityEnum.class) {
+                error.put("error", "Invalid city. Allowed values: " + Arrays.toString(CityEnum.values()));
+                return error;
+            }
+
+            if (targetType == TripType.class) {
+                error.put("error", "Invalid trip type. Allowed values: " + Arrays.toString(TripType.values()));
+                return error;
+            }
+
+            if (targetType == MealType.class) {
+                error.put("error", "Invalid meal type. Allowed values: " + Arrays.toString(MealType.values()));
+                return error;
+            }
+
+            if (targetType == Boolean.class) {
+                error.put("error", "Invalid value for mealAvailable. Allowed values: true or false");
+                return error;
+            }
+        }
+
+        if (cause instanceof DateTimeParseException) {
             error.put("error", "Invalid date format. Use yyyy-MM-dd");
             return error;
         }
 
-        error.put("error", "Malformed JSON request");
+        error.put("error", "Invalid JSON request");
         return error;
     }
 
+   
+    @ExceptionHandler(Exception.class)
+    public Map<String, String> handleOthers(Exception ex) {
+        return Map.of("error", ex.getMessage());
+    }
 }
+
