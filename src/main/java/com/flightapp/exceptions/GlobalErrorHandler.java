@@ -1,9 +1,11 @@
 package com.flightapp.exceptions;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,11 +50,25 @@ public class GlobalErrorHandler {
         return error;
     }
 
-    // Catch-all fallback
+    // all other errors
     @ExceptionHandler(exception=Exception.class)
     public Map<String, String> handleOthers(Exception ex) {
         Map<String, String> error = new HashMap<>();
         error.put("error", ex.getMessage());
         return error;
     }
+    
+    @ExceptionHandler({ HttpMessageNotReadableException.class })
+    public Map<String, String> handleInvalidFormat(HttpMessageNotReadableException ex) {
+        Map<String, String> error = new HashMap<>();
+
+        if (ex.getCause() instanceof DateTimeParseException) {
+            error.put("error", "Invalid date format. Use yyyy-MM-dd");
+            return error;
+        }
+
+        error.put("error", "Malformed JSON request");
+        return error;
+    }
+
 }
