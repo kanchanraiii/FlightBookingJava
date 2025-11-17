@@ -14,5 +14,7 @@ public interface FlightInventoryRepository extends JpaRepository<FlightInventory
 	        CityEnum destinationCity,
 	        LocalDate departureDate
 	);
+	boolean existsByFlightNumberAndDepartureDate(String flightNumber, LocalDate departureDate);
+
 
 }

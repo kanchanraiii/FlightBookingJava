@@ -104,7 +104,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
-        // restore seats
+        // get back seats on cancellation
         FlightInventory out = booking.getOutboundFlight();
         out.setAvailableSeats(out.getAvailableSeats() + booking.getTotalPassengers());
         inventoryRepository.save(out);
