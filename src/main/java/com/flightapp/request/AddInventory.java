@@ -41,36 +41,80 @@ public class AddInventory {
     private boolean mealAvailable;
 
     // Getters + Setters
-    public Long getAirlineId() { return airlineId; }
-    public void setAirlineId(Long airlineId) { this.airlineId = airlineId; }
+    public Long getAirlineId() { 
+    	return airlineId; 
+    }
+    public void setAirlineId(Long airlineId) { 
+    	this.airlineId = airlineId; 
+    }
 
-    public String getFlightNumber() { return flightNumber; }
-    public void setFlightNumber(String flightNumber) { this.flightNumber = flightNumber; }
+    public String getFlightNumber() { 
+    	return flightNumber;
+    }
+    public void setFlightNumber(String flightNumber) { 
+    	this.flightNumber = flightNumber; 
+    }
 
-    public CityEnum getSourceCity() { return sourceCity; }
-    public void setSourceCity(CityEnum sourceCity) { this.sourceCity = sourceCity; }
+    public CityEnum getSourceCity() { 
+    	return sourceCity; 
+    }
+    public void setSourceCity(CityEnum sourceCity) { 
+    	this.sourceCity = sourceCity; 
+    }
 
-    public CityEnum getDestinationCity() { return destinationCity; }
-    public void setDestinationCity(CityEnum destinationCity) { this.destinationCity = destinationCity; }
+    public CityEnum getDestinationCity() { 
+    	return destinationCity; 
+    }
+    public void setDestinationCity(CityEnum destinationCity) { 
+    	this.destinationCity = destinationCity; 
+    }
 
-    public LocalDate getDepartureDate() { return departureDate; }
-    public void setDepartureDate(LocalDate departureDate) { this.departureDate = departureDate; }
+    public LocalDate getDepartureDate() { 
+    	return departureDate; 
+    }
+    public void setDepartureDate(LocalDate departureDate) { 
+    	this.departureDate = departureDate; 
+    }
 
-    public LocalTime getDepartureTime() { return departureTime; }
-    public void setDepartureTime(LocalTime departureTime) { this.departureTime = departureTime; }
+    public LocalTime getDepartureTime() { 
+    	return departureTime; 
+    }
+    public void setDepartureTime(LocalTime departureTime) { 
+    	this.departureTime = departureTime; 
+    }
 
-    public LocalDate getArrivalDate() { return arrivalDate; }
-    public void setArrivalDate(LocalDate arrivalDate) { this.arrivalDate = arrivalDate; }
+    public LocalDate getArrivalDate() { 
+    	return arrivalDate; 
+    }
+    public void setArrivalDate(LocalDate arrivalDate) { 
+    	this.arrivalDate = arrivalDate;
+    }
 
-    public LocalTime getArrivalTime() { return arrivalTime; }
-    public void setArrivalTime(LocalTime arrivalTime) { this.arrivalTime = arrivalTime; }
+    public LocalTime getArrivalTime() { 
+    	return arrivalTime; 
+    }
+    public void setArrivalTime(LocalTime arrivalTime) { 
+    	this.arrivalTime = arrivalTime; 
+    }
 
-    public Integer getTotalSeats() { return totalSeats; }
-    public void setTotalSeats(Integer totalSeats) { this.totalSeats = totalSeats; }
+    public Integer getTotalSeats() { 
+    	return totalSeats; 
+    }
+    public void setTotalSeats(Integer totalSeats) { 
+    	this.totalSeats = totalSeats; 
+    }
 
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
+    public Double getPrice() { 
+    	return price; 
+    }
+    public void setPrice(Double price) { 
+    	this.price = price; 
+    }
 
-    public boolean isMealAvailable() { return mealAvailable; }
-    public void setMealAvailable(boolean mealAvailable) { this.mealAvailable = mealAvailable; }
+    public boolean isMealAvailable() { 
+    	return mealAvailable; 
+    }
+    public void setMealAvailable(boolean mealAvailable) { 
+    	this.mealAvailable = mealAvailable; 
+    }
 }

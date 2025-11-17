@@ -20,21 +20,45 @@ public class PassengerRequest {
     private String meal;
 
     // Getters + Setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() { 
+    	return name; 
+    }
+    public void setName(String name) { 
+    	this.name = name; 
+    }
 
-    public Integer getAge() { return age; }
-    public void setAge(Integer age) { this.age = age; }
+    public Integer getAge() { 
+    	return age; 
+    }
+    public void setAge(Integer age) { 
+    	this.age = age; 
+    }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public String getGender() { 
+    	return gender; 
+    }
+    public void setGender(String gender) { 
+    	this.gender = gender; 
+    }
 
-    public String getSeatOutbound() { return seatOutbound; }
-    public void setSeatOutbound(String seatOutbound) { this.seatOutbound = seatOutbound; }
+    public String getSeatOutbound() { 
+    	return seatOutbound; 
+    }
+    public void setSeatOutbound(String seatOutbound) { 
+    	this.seatOutbound = seatOutbound; 
+    }
 
-    public String getSeatReturn() { return seatReturn; }
-    public void setSeatReturn(String seatReturn) { this.seatReturn = seatReturn; }
+    public String getSeatReturn() { 
+    	return seatReturn; 
+    }
+    public void setSeatReturn(String seatReturn) { 
+    	this.seatReturn = seatReturn; 
+    }
 
-    public String getMeal() { return meal; }
-    public void setMeal(String meal) { this.meal = meal; }
+    public String getMeal() { 
+    	return meal; 
+    }
+    public void setMeal(String meal) { 
+    	this.meal = meal; 
+    }
 }
