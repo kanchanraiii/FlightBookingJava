@@ -2,7 +2,7 @@ package com.flightapp.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.flightapp.model.Booking;
@@ -12,8 +12,12 @@ import com.flightapp.service.BookingService;
 @RequestMapping("/api/v1.0/flight")
 public class TicketController {
 
-    @Autowired
+    
     private BookingService bookingService;
+
+    public TicketController(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
     @GetMapping("/ticket/{pnr}")
     public Booking getTicket(@PathVariable String pnr) {
