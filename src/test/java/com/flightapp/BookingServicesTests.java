@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -179,5 +177,95 @@ class BookingServiceTests {
 
         assertNotNull(booking);
         assertEquals(0, outbound.getAvailableSeats());
+    }
+
+    @Test
+    @DisplayName("Book a round-trip successfully")
+    void bookRoundTripSuccessfully() {
+        FlightInventory outbound = outboundFlightWithSeats(5);
+        FlightInventory returning = outboundFlightWithSeats(5);
+
+        BookingRequest req = validBookingRequest(2);
+        req.setTripType(TripType.ROUND_TRIP);
+        req.setReturnFlightId(2L);
+
+        // FIX: seatReturn required for round trip
+        req.getPassengers().forEach(p -> p.setSeatReturn("B1"));
+
+        when(inventoryRepository.findById(1L)).thenReturn(Optional.of(outbound));
+        when(inventoryRepository.findById(2L)).thenReturn(Optional.of(returning));
+        when(bookingRepository.save(any(Booking.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking booking = bookingService.bookFlight(1L, req);
+
+        assertNotNull(booking);
+        assertEquals(2, booking.getTotalPassengers());
+        assertEquals(3, outbound.getAvailableSeats());
+        assertEquals(3, returning.getAvailableSeats());
+    }
+
+    @Test
+    @DisplayName("Reject round-trip booking when return flight not found")
+    void rejectRoundTripWhenReturnFlightNotFound() {
+        FlightInventory outbound = outboundFlightWithSeats(3);
+        BookingRequest req = validBookingRequest(2);
+
+        req.setTripType(TripType.ROUND_TRIP);
+        req.setReturnFlightId(2L);
+
+        when(inventoryRepository.findById(1L)).thenReturn(Optional.of(outbound));
+        when(inventoryRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> bookingService.bookFlight(1L, req));
+    }
+
+    @Test
+    @DisplayName("Reject round-trip when not enough seats on return flight")
+    void rejectRoundTripWhenNotEnoughSeats() {
+        FlightInventory outbound = outboundFlightWithSeats(5);
+        FlightInventory returning = outboundFlightWithSeats(1);
+
+        BookingRequest req = validBookingRequest(3);
+        req.setTripType(TripType.ROUND_TRIP);
+        req.setReturnFlightId(2L);
+
+        // FIX: seatReturn required
+        req.getPassengers().forEach(p -> p.setSeatReturn("B1"));
+
+        when(inventoryRepository.findById(1L)).thenReturn(Optional.of(outbound));
+        when(inventoryRepository.findById(2L)).thenReturn(Optional.of(returning));
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.bookFlight(1L, req));
+    }
+
+    @Test
+    @DisplayName("Reject round-trip when returnFlightId is missing")
+    void rejectRoundTripWithoutReturnFlightId() {
+
+        BookingRequest req = validBookingRequest(2);
+        req.setTripType(TripType.ROUND_TRIP);
+        req.setReturnFlightId(null);
+
+
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.bookFlight(1L, req));
+    }
+
+    @Test
+    @DisplayName("Reject booking when passenger age is invalid")
+    void rejectInvalidPassengerAge() {
+        FlightInventory outbound = outboundFlightWithSeats(5);
+
+        BookingRequest req = validBookingRequest(1);
+        req.getPassengers().get(0).setAge(-5);
+
+        when(inventoryRepository.findById(1L)).thenReturn(Optional.of(outbound));
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.bookFlight(1L, req));
     }
 }
